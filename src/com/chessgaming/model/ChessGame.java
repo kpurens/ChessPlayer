@@ -1,17 +1,13 @@
 package com.chessgaming.model;
 
-import java.io.IOException;
-
 import com.chessgaming.enums.ChessPieceColor;
 import com.chessgaming.enums.ChessValidationError;
 import com.chessgaming.gui.InterfaceAsciiGUI;
+import com.chessgaming.simulation.ChessSimulator;
 import com.chessgaming.validation.ChessLogicValidator;
 import com.chessgaming.validation.GameEndException;
 import com.chessgaming.validation.UserInputValidator;
 import com.chessgaming.validation.ValidationException;
-import com.whitehatgaming.UserInputFile;
-
-import simulation.ChessSimulator;
 
 /**
  * Main class for playing a game of chess.

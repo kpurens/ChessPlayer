@@ -1,4 +1,4 @@
-package simulation;
+package com.chessgaming.simulation;
 
 import java.util.List;
 
