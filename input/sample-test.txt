@@ -1,5 +1,6 @@
 d2d4
 g7g6
+d4d6
 c1f4
 f8g7
 e2e3

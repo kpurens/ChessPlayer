@@ -5,8 +5,11 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import com.chessgaming.ChessGame;
+import com.chessgaming.enums.ChessGameResult;
 import com.chessgaming.enums.ChessValidationError;
+import com.chessgaming.gui.InterfaceAsciiGUI;
+import com.chessgaming.model.ChessGame;
+import com.chessgaming.validation.GameEndException;
 import com.chessgaming.validation.ValidationException;
 
 public class TestValidationException {
@@ -29,241 +32,103 @@ public class TestValidationException {
 	private int[][] game16 = { { 4, 6, 4, 5}, { 4, 1, 4, 2}, { 3, 7, 1, 5} };
 	private int[][] game17 = { { 2, 6, 2, 5}, { 4, 1, 4, 2}, { 3, 7, 1, 5}, { 4, 0, 4, 1}, {1, 5, 1, 4}, {0, 1, 0, 2}};
 	
-	@Test
-    public void test1() throws Exception {
+	private void simulateChessGame(int[][] gameMoves, ChessValidationError expectedResult) {
 		try {
-			ChessGame chessGame = new ChessGame();
-			for (int[] userInput : game1) {
+			ChessGame chessGame = new ChessGame(new InterfaceAsciiGUI());
+			for (int[] userInput : gameMoves) {
 				chessGame.executeChessMove(userInput);
 			}
 		} catch (ValidationException e) {
-			assertEquals(ChessValidationError.ERROR_INPUT_MUST_NOT_BE_EMPTY, e.getErrorMessage());
+			assertEquals(expectedResult, e.getErrorMessage());
 			return;
+		} catch (Exception e) {
+			fail();
 		}
 		fail();
+	}
+	
+	@Test
+    public void test1() throws Exception {
+		simulateChessGame(game1, ChessValidationError.ERROR_INPUT_MUST_NOT_BE_EMPTY);
     }
 	
 	@Test
     public void test2() throws Exception {
-		try {
-			ChessGame chessGame = new ChessGame();
-			for (int[] userInput : game2) {
-				chessGame.executeChessMove(userInput);
-			}
-		} catch (ValidationException e) {
-			assertEquals(ChessValidationError.ERROR_INPUT_INCORRECT_FORMAT, e.getErrorMessage());
-			return;
-		}
-		fail();
+		simulateChessGame(game2, ChessValidationError.ERROR_INPUT_INCORRECT_FORMAT);
     }
 	
 	@Test
     public void test3() throws Exception {
-		try {
-			ChessGame chessGame = new ChessGame();
-			for (int[] userInput : game3) {
-				chessGame.executeChessMove(userInput);
-			}
-		} catch (ValidationException e) {
-			assertEquals(ChessValidationError.ERROR_NUMBER_OUT_OF_BOUNDS, e.getErrorMessage());
-			return;
-		}
-		fail();
+		simulateChessGame(game3, ChessValidationError.ERROR_NUMBER_OUT_OF_BOUNDS);
     }
 	
 	@Test
     public void test4() throws Exception {
-		try {
-			ChessGame chessGame = new ChessGame();
-			for (int[] userInput : game4) {
-				chessGame.executeChessMove(userInput);
-			}
-		} catch (ValidationException e) {
-			assertEquals(ChessValidationError.ERROR_SOURCE_POSITION_NO_CHESS_PIECE, e.getErrorMessage());
-			return;
-		}
-		fail();
+		simulateChessGame(game4, ChessValidationError.ERROR_SOURCE_POSITION_NO_CHESS_PIECE);
     }
 	
 	@Test
     public void test5() throws Exception {
-		try {
-			ChessGame chessGame = new ChessGame();
-			for (int[] userInput : game5) {
-				chessGame.executeChessMove(userInput);
-			}
-		} catch (ValidationException e) {
-			assertEquals(ChessValidationError.ERROR_SOURCE_TARGET_SQUARES_MUST_BE_DIFFERENT, e.getErrorMessage());
-			return;
-		}
-		fail();
+		simulateChessGame(game5, ChessValidationError.ERROR_SOURCE_TARGET_SQUARES_MUST_BE_DIFFERENT);
     }
 	
 	@Test
     public void test6() throws Exception {
-		try {
-			ChessGame chessGame = new ChessGame();
-			for (int[] userInput : game6) {
-				chessGame.executeChessMove(userInput);
-			}
-		} catch (ValidationException e) {
-			assertEquals(ChessValidationError.ERROR_TARGET_SQUARE_SAME_COLOR_PIECE, e.getErrorMessage());
-			return;
-		}
-		fail();
+		simulateChessGame(game6, ChessValidationError.ERROR_TARGET_SQUARE_SAME_COLOR_PIECE);
     }
 	
 	@Test
     public void test7() throws Exception {
-		try {
-			ChessGame chessGame = new ChessGame();
-			for (int[] userInput : game7) {
-				chessGame.executeChessMove(userInput);
-			}
-		} catch (ValidationException e) {
-			assertEquals(ChessValidationError.ERROR_NOT_YOUR_TURN, e.getErrorMessage());
-			return;
-		}
-		fail();
+		simulateChessGame(game7, ChessValidationError.ERROR_NOT_YOUR_TURN);
     }
 	
 	@Test
     public void test8() throws Exception {
-		try {
-			ChessGame chessGame = new ChessGame();
-			for (int[] userInput : game8) {
-				chessGame.executeChessMove(userInput);
-			}
-		} catch (ValidationException e) {
-			assertEquals(e.getErrorMessage(), ChessValidationError.ERROR_INVALID_PAWN_MOVE);
-			return;
-		}
-		fail();
+		simulateChessGame(game8, ChessValidationError.ERROR_INVALID_PAWN_MOVE);
     }
-
+	
 	@Test
     public void test9() throws Exception {
-		try {
-			ChessGame chessGame = new ChessGame();
-			for (int[] userInput : game9) {
-				chessGame.executeChessMove(userInput);
-			}
-		} catch (ValidationException e) {
-			assertEquals(ChessValidationError.ERROR_INVALID_KNIGHT_MOVE, e.getErrorMessage());
-			return;
-		}
-		fail();
+		simulateChessGame(game9, ChessValidationError.ERROR_INVALID_KNIGHT_MOVE);
     }
 	
 	@Test
     public void test10() throws Exception {
-		try {
-			ChessGame chessGame = new ChessGame();
-			for (int[] userInput : game10) {
-				chessGame.executeChessMove(userInput);
-			}
-		} catch (ValidationException e) {
-			assertEquals(ChessValidationError.ERROR_INVALID_BISHOP_MOVE, e.getErrorMessage());
-			return;
-		}
-		fail();
+		simulateChessGame(game10, ChessValidationError.ERROR_INVALID_BISHOP_MOVE);
     }
 	
 	@Test
     public void test11() throws Exception {
-		try {
-			ChessGame chessGame = new ChessGame();
-			for (int[] userInput : game11) {
-				chessGame.executeChessMove(userInput);
-			}
-		} catch (ValidationException e) {
-			assertEquals(ChessValidationError.ERROR_INVALID_ROOK_MOVE, e.getErrorMessage());
-			return;
-		}
-		fail();
+		simulateChessGame(game11, ChessValidationError.ERROR_INVALID_ROOK_MOVE);
     }
 	
 	@Test
     public void test12() throws Exception {
-		try {
-			ChessGame chessGame = new ChessGame();
-			for (int[] userInput : game12) {
-				chessGame.executeChessMove(userInput);
-			}
-		} catch (ValidationException e) {
-			assertEquals(ChessValidationError.ERROR_INVALID_QUEEN_MOVE, e.getErrorMessage());
-			return;
-		}
-		fail();
+		simulateChessGame(game12, ChessValidationError.ERROR_INVALID_QUEEN_MOVE);
     }
 	
 	@Test
     public void test13() throws Exception {
-		try {
-			ChessGame chessGame = new ChessGame();
-			for (int[] userInput : game13) {
-				chessGame.executeChessMove(userInput);
-			}
-		} catch (ValidationException e) {
-			assertEquals(ChessValidationError.ERROR_INVALID_KING_MOVE, e.getErrorMessage());
-			return;
-		}
-		fail();
+		simulateChessGame(game13, ChessValidationError.ERROR_INVALID_KING_MOVE);
     }
 	
 	@Test
     public void test14() throws Exception {
-		try {
-			ChessGame chessGame = new ChessGame();
-			for (int[] userInput : game14) {
-				chessGame.executeChessMove(userInput);
-			}
-		} catch (ValidationException e) {
-			assertEquals(ChessValidationError.ERROR_PAWN_TARGET_SQUARE_MUST_BE_EMPTY, e.getErrorMessage());
-			return;
-		}
-		fail();
+		simulateChessGame(game14, ChessValidationError.ERROR_PAWN_TARGET_SQUARE_MUST_BE_EMPTY);
     }
 	
 	@Test
     public void test15() throws Exception {
-		try {
-			ChessGame chessGame = new ChessGame();
-			for (int[] userInput : game15) {
-				chessGame.executeChessMove(userInput);
-			}
-		} catch (ValidationException e) {
-			assertEquals(ChessValidationError.ERROR_TARGET_SQUARE_SAME_COLOR_PIECE, e.getErrorMessage());
-			return;
-		}
-		fail();
+		simulateChessGame(game15, ChessValidationError.ERROR_TARGET_SQUARE_SAME_COLOR_PIECE);
     }
 	
 	@Test
     public void test16() throws Exception {
-		try {
-			ChessGame chessGame = new ChessGame();
-			for (int[] userInput : game16) {
-				chessGame.executeChessMove(userInput);
-			}
-		} catch (ValidationException e) {
-			assertEquals(ChessValidationError.ERROR_PATH_TOWARDS_TARGET_NOT_EMPTY, e.getErrorMessage());
-			return;
-		}
-		fail();
+		simulateChessGame(game16, ChessValidationError.ERROR_PATH_TOWARDS_TARGET_NOT_EMPTY);
     }
 	
 	@Test
     public void test17() throws Exception {
-		try {
-			ChessGame chessGame = new ChessGame();
-			for (int[] userInput : game17) {
-				chessGame.executeChessMove(userInput);
-			}
-		} catch (ValidationException e) {
-			assertEquals(ChessValidationError.ERROR_KING_WOULD_BE_IN_CHECK, e.getErrorMessage());
-			return;
-		}
-		fail();
+		simulateChessGame(game17, ChessValidationError.ERROR_KING_WOULD_BE_IN_CHECK);
     }
 }

@@ -46,4 +46,8 @@ public class InterfaceAsciiGUI {
 			System.out.println("in check");
 		}
 	}
+	
+	public void display(String information) {
+		System.out.println(information);
+	}
 }

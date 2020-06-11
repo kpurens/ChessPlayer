@@ -1,5 +1,6 @@
 package com.chessgaming.validation;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.chessgaming.enums.ChessGameResult;
@@ -121,7 +122,7 @@ public class ChessLogicValidator {
 		if (ChessPieceColor.WHITE.equals(pieceSource.getColor())) {
 			if (sy - ty == 1) {
 				validateSquareMustBeEmpty(tx, ty);
-			} else if (sy - ty == 2) {
+			} else if (sy - ty == 2 && ty == 4) {
 				validateSquareMustBeEmpty(tx, ty);
 				validateSquareMustBeEmpty(tx, ty + 1);
 			} else {
@@ -131,7 +132,7 @@ public class ChessLogicValidator {
 			if (sy - ty == -1) {
 				validateSquareMustBeEmpty(tx, ty);
 			} else
-			if (sy - ty == -2) {
+			if (sy - ty == -2 && ty == 3) {
 				validateSquareMustBeEmpty(tx, ty);
 				validateSquareMustBeEmpty(tx, ty - 1);
 			} else {
@@ -221,6 +222,7 @@ public class ChessLogicValidator {
 		validateKingNotInCheckFromKnight(king);
 		validateKingNotInCheckDiagonally(king);
 		validateKingNotInCheckHorizontally(king);
+		validateKingNotInCheckVertically(king);		
 	}
 	
 	private void validateKingNotInCheckFromPawn(ChessPiece king) throws ValidationException {
@@ -261,6 +263,8 @@ public class ChessLogicValidator {
 				int y = king.getY()+(i*directionY);
 				if (isPositionSameColorPiece(x, y, king.getColor())) {
 					break;
+				} else if (isPathBlockedByOtherPiece(x, y, ChessPieceType.BISHOP, ChessPieceType.QUEEN)) { 
+					break;
 				} else {
 					validateKingCheckFromOpponentsPiece(ChessPieceType.BISHOP, king.getColor(), x, y);
 					validateKingCheckFromOpponentsPiece(ChessPieceType.QUEEN, king.getColor(), x, y);
@@ -276,18 +280,24 @@ public class ChessLogicValidator {
 				int y = king.getY();
 				if (isPositionSameColorPiece(x, y, king.getColor())) {
 					break;
+				} else if (isPathBlockedByOtherPiece(x, y, ChessPieceType.ROOK, ChessPieceType.QUEEN)) { 
+					break;
 				} else {
 					validateKingCheckFromOpponentsPiece(ChessPieceType.ROOK, king.getColor(), x, y);
 					validateKingCheckFromOpponentsPiece(ChessPieceType.QUEEN, king.getColor(), x, y);
 				}
 			}
 		}
-		
+	}
+	
+	private void validateKingNotInCheckVertically(ChessPiece king) throws ValidationException {
 		for (int dir =-1; dir <= 1; dir+=2) {
 			for (int i = 1; i < ChessBoard.BOARD_SIZE; i++) {
 				int x = king.getX();
 				int y = king.getY()+(i*dir);
 				if (isPositionSameColorPiece(x, y, king.getColor())) {
+					break;
+				} else if (isPathBlockedByOtherPiece(x, y, ChessPieceType.ROOK, ChessPieceType.QUEEN)) { 
 					break;
 				} else {
 					validateKingCheckFromOpponentsPiece(ChessPieceType.ROOK, king.getColor(), x, y);
@@ -306,6 +316,16 @@ public class ChessLogicValidator {
 		}
 	}
 	
+	private boolean isPathBlockedByOtherPiece(int x, int y, ChessPieceType... validPieces) {
+		if (isPositionWithinBounds(x, y)) {
+			ChessPiece piece = board[x][y];
+			if (piece != null && !Arrays.stream(validPieces).anyMatch(piece.getType()::equals)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private boolean isPositionSameColorPiece(int x, int y, ChessPieceColor kingColor) {
 		return isPositionWithinBounds(x, y) && board[x][y] != null && kingColor.equals(board[x][y].getColor());
 	}
@@ -314,49 +334,7 @@ public class ChessLogicValidator {
 		return x >= 0 && y >= 0 && x < ChessBoard.BOARD_SIZE && y < ChessBoard.BOARD_SIZE;
 	}
 	
-	public void simulateGameEnd(ChessPlayer player, ChessLogicValidator logicValidator) throws GameEndException {
-		if (isKingInCheck(player)) {
-			
-			boolean hasLegalMove = false;
-			List<ChessPiece> chessPieces = player.getAllRemainingChessPieces();
-			
-			for (ChessPiece piece : chessPieces) {
-				for (int x = 0; x < ChessBoard.BOARD_SIZE; x++) {
-					for (int y = 0; y < ChessBoard.BOARD_SIZE; y++) {
-						if (x == piece.getX() && y == piece.getY())continue;
-						
-						setupMoveData(new ChessMoveData(piece.getX(), piece.getY(), x, y));
-						chessBoard.saveBoardState();
-						try {
-							validateBasicLogic(player);
-							validateChessMove();	
-							
-							board[piece.getX()][piece.getY()] = null;
-							board[x][y] = piece;
-							board[x][y].setX(x);
-							board[x][y].setY(y);
-							
-							validateKingNotInCheck(player);
-						} catch (ValidationException e) {
-							chessBoard.revertBoardState();
-							continue;
-						}
-						
-						chessBoard.revertBoardState();						
-						hasLegalMove = true;
-					}
-				}
-			}
-			
-			if (!hasLegalMove) {
-				if (ChessPieceColor.WHITE.equals(player.getChessPiece(ChessPieceType.KING).getColor())) {
-					throw new GameEndException(ChessGameResult.CHECKMATE_BLACK_WINS);
-				} else {
-					throw new GameEndException(ChessGameResult.CHECKMATE_WHITE_WINS);
-				}
-			}
-		}
-	}
+
 	
 
 }
